@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AJAX code challenge: Part Two</title>
+    
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library for Bootstrap -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+
+</head>
+
+<body>
+
+        <div class='container'>
+        <div class='row'>
+            <div class='col-xs-12'>
+                <h1 class='text-center'>Star Wars Character Search</h1>
+            </div>
+            <div class='col-xs-12 text-center'>
+                <h3>Select character 1:</h3>
+                <div class='col-xs-6'>
+                <select name='characterOne' id='characterOne' class='form-control'>
+                    <option value='11'>Anakin Skywalker</option>
+                    <option value='2'>C-3PO</option>
+                    <option value='13'>Chewbacca</option>
+                    <option value='4'>Darth Vadar</option>
+                    <option value='1'>Luke Skywalker</option>
+                    <option value='10'>Obi-Wan Kenobi</option>
+                    <option value='5'>Princess Leia</option>
+                    <option value='3'>R2-D2</option>
+                </select>
+                </div>
+                <div class='col-xs-6'>
+                <select name='characterTwo' id='characterTwo' class='form-control'>
+                    <option value='11' disabled>Anakin Skywalker</option>
+                    <option value='2'>C-3PO</option>
+                    <option value='13'>Chewbacca</option>
+                    <option value='4'>Darth Vadar</option>
+                    <option value='1'>Luke Skywalker</option>
+                    <option value='10'>Obi-Wan Kenobi</option>
+                    <option value='5'>Princess Leia</option>
+                    <option value='3'>R2-D2</option>
+                </select>
+                </div>
+                <br><br>
+                <button id='search' class='btn btn-primary'>Search</button>
+            </div>
+            <br>
+            <div class='col-xs-12 text-center' id='results'>
+            </div>
+        </div>
+    </div>
+
+
+<!-- CSS -->
+
+<style>
+    
+.results {
+    border-radius: 10px;
+    padding: 5px;
+    vertical-align: center;
+}
+
+.match {
+    border: 2px solid green;
+    color: green;
+}
+
+.mismatch {
+    border: 2px solid red;
+    color: red;
+}
+
+</style>
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+// Don't let users select the same character
+
+$('select').change(function() {
+
+    if ($(this).attr('id') === 'characterOne'){
+        
+        $('#characterTwo').children().removeAttr('disabled');
+
+        $('#characterTwo option[value="'+ $(this).val()+ '"]').attr('disabled', 'disabled');
+    } else {
+
+        $('#characterOne').children().removeAttr('disabled');
+
+        $('#characterOne option[value="'+ $(this).val()+ '"]').attr('disabled', 'disabled');
+    }
+});
+
+
+
+$('#search').on('click', function() {
+
+    var characterPlanets = [];
+    var characterTerrain = [];
+
+    var char1 = $('#characterOne').val();
+    var char2 = $('#characterTwo').val();
+
+
+    // API call to find link to characters' home planet information
+    var char1Planet = $.get('http://swapi.co/api/people/' + char1 +'/', function(resultsOne) {
+            characterPlanets.push(resultsOne.homeworld);
+        });
+
+    var char2Planet = $.get('http://swapi.co/api/people/' + char2 +'/', function(resultsTwo) {
+            characterPlanets.push(resultsTwo.homeworld)
+        });
+
+    // API call to get each character's home planet info
+
+    function displayMessage() {
+        if (characterTerrain[0] === characterTerrain[1]) {
+            $('#results').html('<h1><span class="results match">TERRAINS MATCH</span><br><br>' + characterTerrain[0] + '</h1>');
+
+        } else {
+            $('#results').html('<h1><span class="results mismatch">TERRAINS DO NOT MATCH</span><br><br>' + characterTerrain[0] + '<br>' + characterTerrain[1] + '</h1>');
+        }
+    }
+
+    function findTerrains() {
+        for (var i = 0; i < characterPlanets.length; i++) {
+            window['planet'+i] = $.get(characterPlanets[i], function(results) {
+                characterTerrain.push(results.terrain);
+            });
+        }
+
+        $.when(planet0, planet1).done(displayMessage);
+    }
+
+    $.when(char1Planet, char2Planet).done(findTerrains);
+
+    });
+
+    
+</script>
+
+</body>
+</html>

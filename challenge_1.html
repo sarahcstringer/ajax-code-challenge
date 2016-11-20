@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>AJAX code challenge: Part One</title>
+    
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library for Bootstrap -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+
+</head>
+
+<body>
+    <div class='container'>
+        <div class='row'>
+            <div class='col-xs-12'>
+                <h1 class='text-center'>Star Wars Character Search</h1>
+            </div>
+
+            <div class='col-xs-12 text-center'>
+                <h3>Select character 1:</h3>
+                    <div class='col-xs-6 col-xs-offset-3'>
+                        <select name='character' id='character' class='form-control'>
+                            <option value='11'>Anakin Skywalker</option>
+                            <option value='2'>C-3PO</option>
+                            <option value='13'>Chewbacca</option>
+                            <option value='4'>Darth Vadar</option>
+                            <option value='1'>Luke Skywalker</option>
+                            <option value='10'>Obi-Wan Kenobi</option>
+                            <option value='5'>Princess Leia</option>
+                            <option value='3'>R2-D2</option>
+                        </select>
+                    </div>
+                <br><br>
+                <button id='search' class='btn btn-primary'>Search</button>
+            </div>
+
+            <div class='col-xs-12 text-center' id='results' hidden>
+                <h1>Character: <span id='characterName'><span></h1>
+                <h3>Home Planet: <span id='homePlanetName'></span></h3>
+                <h3>Terrain: <span id='planetTerrain'></span></h3>
+            </div>
+        </div>
+    </div>
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+    function displayPlanetInfo(info) {
+        $('#homePlanetName').html(info.name);
+        $('#planetTerrain').html(info.terrain);
+        $('#results').show();
+    }
+
+    function getPlanetInfo(results) {
+        $('#characterName').html(results.name);
+        $.get(results.homeworld, displayPlanetInfo);
+    }
+
+    $('#search').on('click', function() {
+        var character = $('#character').val();
+        $.get('http://swapi.co/api/people/' + character +'/', getPlanetInfo);
+    });
+    
+</script>
+
+</body>
+</html>
